@@ -25,3 +25,16 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+.idea/
+.fleet/
+.phpunit.cache/
+/database/*.sqlite
+/database/*.sqlite-journal
+.php-cs-fixer.cache
+phpstan-baseline.neon
+docker-compose.override.yml
+.env.testing
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log

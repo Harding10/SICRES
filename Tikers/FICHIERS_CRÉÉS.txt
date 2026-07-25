@@ -1,0 +1,391 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║            SICRES - FICHIERS DE TICKETS CRÉÉS - 2026-07-23              ║
+║                    Structure complète du projet                          ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+RACINE: /home/disponibleaminuit/Bureau/PROJET_ENCOURE/SICRES/Tikers/
+
+📄 FICHIERS PRINCIPAUX
+═════════════════════
+✓ README.md
+  └─ Vue d'ensemble générale, structure des dossiers, technologies utilisées
+  └─ Rôles & permissions
+  └─ Workflow typique
+
+✓ INDEX.md
+  └─ Index complet de tous les 44 tickets
+  └─ Liens directs vers chaque ticket
+  └─ Statistiques par module
+
+✓ PHASES_DE_DÉVELOPPEMENT.md
+  └─ 5 phases de développement détaillées (Foundation → Polish)
+  └─ Tickets par phase
+  └─ Dépendances critiques
+  └─ Acceptance criteria par phase
+  └─ Risques & mitigation
+  └─ Timeline estimée: 8-11 semaines
+
+✓ FICHIERS_CRÉÉS.txt
+  └─ Ce fichier - inventaire complet
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 DOSSIER: TikersBack/
+════════════════════════
+Tickets BACKEND (Laravel 13 + PostgreSQL)
+
+✓ MODULE_1_AUTHENTIFICATION.md
+  ├─ AUTH-001 🔴 Backend: Setup Sanctum Auth Middleware (3-4 jours)
+  │   └─ Configuration Sanctum, CORS, middleware protection
+  ├─ AUTH-002 🔴 Frontend: Create Login Page (2-3 jours)
+  │   └─ Form login, token management, localStorage
+  └─ AUTH-003 🔴 Frontend: Implement Auth Middleware (2-3 jours)
+      └─ Next.js middleware, route protection, RBAC
+
+✓ MODULE_2_UTILISATEURS.md
+  ├─ USER-001 🔴 Backend: Create User Roles & Permissions (2-3 jours)
+  │   └─ RBAC system, roles table, permissions table
+  │   └─ 2 rôles: admin, school_director
+  └─ USER-002 🔴 Backend: User Registration Endpoint (2-3 jours)
+      └─ POST /api/register, email verification, role assignment
+
+✓ MODULE_3_ETABLISSEMENTS.md
+  ├─ SCHOOL-001 🔴 Backend: Create School Model & Migration (2-3 jours)
+  │   └─ Établissement model avec 20+ champs
+  │   └─ Soft delete, relations, scopes
+  ├─ SCHOOL-002 🔴 Backend: School CRUD Endpoints (2-3 jours)
+  │   └─ GET /api/schools (paginated, filterable)
+  │   └─ POST, PUT, DELETE endpoints
+  └─ SCHOOL-003 🟡 Backend: School Authorization (1-2 jours)
+      └─ Policies, director ne modifie que sa propre école
+      └─ Admin peut tout voir & modifier
+
+✓ MODULE_4_CAMPAGNES.md
+  ├─ CAMPAIGN-001 🔴 Backend: Create Campaign Model (2-3 jours)
+  │   └─ Campaign model, states: draft/active/closed
+  │   └─ Relations avec declarations
+  ├─ CAMPAIGN-002 🔴 Backend: Campaign CRUD & Scheduling (3-4 jours)
+  │   └─ CRUD endpoints
+  │   └─ Jobs pour ouvrir/fermer automatiquement
+  │   └─ Archive functionality
+  └─ CAMPAIGN-003 🟡 Backend: Campaign Status Management (1-2 jours)
+      └─ State machine, validation transitions
+      └─ Prevent modifications when declarations exist
+
+✓ MODULE_5_DECLARATIONS.md
+  ├─ DECL-001 🔴 Backend: Create Declaration Model (2-3 jours)
+  │   └─ Declaration model (effectifs, infrastructures, besoins)
+  │   └─ Foreign keys: campaign, établissement
+  │   └─ UNIQUE constraint (campaign, établissement)
+  ├─ DECL-002 🔴 Backend: Declaration CRUD & Draft Save (2-3 jours)
+  │   └─ CRUD endpoints
+  │   └─ Auto-save draft functionality
+  │   └─ Prevent submission when invalid
+  ├─ DECL-003 🔴 Backend: Declaration Submission (2 jours)
+  │   └─ Submission endpoint
+  │   └─ Lock after submission
+  │   └─ Notification to admin
+  └─ DECL-006 🟡 Backend: Declaration History & Audit (1-2 jours)
+      └─ declaration_audits table
+      └─ Log all changes (created, updated, submitted)
+      └─ Store old_values, new_values (JSONB)
+
+✓ MODULE_6_DOCUMENTS.md
+  ├─ DOC-001 🔴 Backend: Create Document Model & Storage (2 jours)
+  │   └─ Document model (type, version, validation_status)
+  │   └─ File storage structure
+  └─ DOC-002 🔴 Backend: File Upload & Validation (2-3 jours)
+      └─ Secure upload endpoint
+      └─ File type validation (PDF, images)
+      └─ Size limits, virus scan, secure storage
+  └─ DOC-003 🟡 Backend: Document Access Control (1-2 jours)
+      └─ Schools upload own docs
+      └─ Admin can view/approve/reject
+      └─ Workflow: pending → approved/rejected
+
+✓ MODULE_7_8_9_10.md
+  ├─ VAL-001 🔴 Backend: Declaration Validation Workflow (2 jours)
+  │   └─ POST /api/declarations/{id}/validate
+  │   └─ POST /api/declarations/{id}/reject
+  │   └─ States: pending_review → validated/rejected
+  │   └─ Track who validated, when
+  │
+  ├─ VAL-002 🟡 Backend: Rejection & Correction Requests (1-2 jours)
+  │   └─ Rejection avec raison
+  │   └─ Allow school to resubmit
+  │   └─ Track correction history
+  │
+  ├─ DASH-001 🔴 Backend: Dashboard Statistics Endpoints (2 jours)
+  │   └─ GET /api/dashboard/stats
+  │   └─ Total schools (public/private)
+  │   └─ Participation rate, submission status
+  │   └─ By-level, by-type, by-city aggregation
+  │   └─ Caching avec Redis
+  │
+  ├─ STAT-001 🔴 Backend: Statistics Engine (2-3 jours)
+  │   └─ Distribution by education level
+  │   └─ Geographic aggregation
+  │   └─ Evolution year-over-year
+  │   └─ Infrastructure analysis
+  │
+  ├─ STAT-003 🟡 Backend: Comparative Analysis (2 jours)
+  │   └─ Compare campaigns
+  │   └─ Year-over-year trends
+  │   └─ Anomaly detection
+  │
+  ├─ EXPORT-001 🔴 Backend: Export to Excel (2 jours)
+  │   └─ School list, declarations, statistics
+  │   └─ Formatted, colored, professional
+  │   └─ Use laravel-excel
+  │
+  ├─ EXPORT-002 🔴 Backend: Export to PDF (2-3 jours)
+  │   └─ Campaign summary, statistics, charts
+  │   └─ Official letterhead, signature line
+  │   └─ Use barryvdh/laravel-dompdf
+  │
+  └─ EXPORT-003 🟡 Backend: CSV Data Export (1 jour)
+      └─ Raw declaration data
+      └─ School registry
+      └─ Statistics in table format
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 DOSSIER: TikerFront/
+═════════════════════════
+Tickets FRONTEND (Next.js 19 + React + Tailwind CSS)
+
+✓ MODULE_1_AUTHENTIFICATION.md
+  ├─ AUTH-002 🔴 Frontend: Create Login Page (2-3 jours)
+  │   └─ components/Auth/LoginForm.tsx
+  │   └─ utils/auth.ts (login, logout, getToken, setToken)
+  │   └─ app/auth/login/page.tsx
+  │   └─ Token storage, error handling
+  │
+  └─ AUTH-003 🔴 Frontend: Implement Auth Middleware (2-3 jours)
+      └─ middleware.ts (route protection)
+      └─ context/AuthContext.tsx
+      └─ hooks/useAuth.ts
+      └─ Token refresh logic
+      └─ RBAC enforcement
+
+✓ MODULE_2_UTILISATEURS.md
+  ├─ USER-003 🔴 Frontend: User Registration Form (2-3 jours)
+  │   └─ components/Auth/RegisterForm.tsx
+  │   └─ app/auth/register/page.tsx
+  │   └─ Email verification step
+  │   └─ Password strength indicator
+  │   └─ Form validation
+  │
+  └─ USER-004 🟡 Frontend: User Account Management (2-3 jours)
+      └─ app/account/page.tsx
+      └─ components/Account/ProfileForm.tsx
+      └─ components/Account/PasswordForm.tsx
+      └─ components/Account/AssignedSchools.tsx
+      └─ Delete account functionality
+
+✓ MODULE_3_ETABLISSEMENTS.md
+  ├─ SCHOOL-004 🔴 Frontend: School Profile Creation (2-3 jours)
+  │   └─ components/Schools/SchoolForm.tsx
+  │   └─ app/schools/create/page.tsx
+  │   └─ Form validation
+  │   └─ Code uniqueness check
+  │   └─ POST to /api/schools
+  │
+  ├─ SCHOOL-005 🟡 Frontend: Admin School List & Search (2-3 jours)
+  │   └─ components/Schools/SchoolList.tsx
+  │   └─ components/Schools/SchoolFilters.tsx
+  │   └─ app/admin/schools/page.tsx
+  │   └─ Pagination, filtering, searching
+  │   └─ Bulk actions
+  │
+  └─ SCHOOL-006 🟡 Frontend: School Detail View (1-2 jours)
+      └─ app/admin/schools/[id]/page.tsx
+      └─ Show all info, historique, edit, delete
+
+✓ MODULE_4_5_6_7_8_9_10.md
+  ├─ CAMPAIGN-004 🔴 Frontend: Admin Campaign Manager (2-3 jours)
+  │   └─ app/admin/campaigns/page.tsx
+  │   └─ app/admin/campaigns/create/page.tsx
+  │   └─ app/admin/campaigns/[id]/page.tsx
+  │   └─ Create, edit, open/close, archive
+  │
+  ├─ CAMPAIGN-005 🟡 Frontend: School Campaign List (1-2 jours)
+  │   └─ app/campaigns/page.tsx
+  │   └─ Show active campaigns + dates
+  │
+  ├─ DECL-004 🔴 Frontend: Declaration Form (3-4 jours)
+  │   └─ app/campaigns/[id]/declare/page.tsx
+  │   └─ components/Declarations/DeclarationForm.tsx
+  │   └─ Effectifs, infrastructures, besoins sections
+  │   └─ Real-time draft auto-save
+  │   └─ Validation before submit
+  │
+  ├─ DECL-005 🟡 Frontend: Declaration Status Tracker (1-2 jours)
+  │   └─ Status badge component
+  │   └─ Show submitted date, validator name
+  │   └─ Show rejection reason if applicable
+  │
+  ├─ DOC-004 🔴 Frontend: Document Upload Interface (2-3 jours)
+  │   └─ components/Documents/DocumentUploader.tsx
+  │   └─ Drag-drop area
+  │   └─ File preview, progress bar
+  │   └─ Versioning support
+  │
+  ├─ DOC-005 🟡 Frontend: Admin Document Review (1-2 jours)
+  │   └─ app/admin/documents/page.tsx
+  │   └─ View, approve, reject buttons
+  │   └─ Request new version
+  │
+  ├─ VAL-003 🔴 Frontend: Admin Validation Dashboard (2-3 jours)
+  │   └─ app/admin/validations/page.tsx
+  │   └─ components/Validations/DeclarationReviewPanel.tsx
+  │   └─ List pending declarations
+  │   └─ Approve/Reject + comments
+  │   └─ View documents & changes
+  │
+  ├─ VAL-004 🟡 Frontend: School Correction Interface (1-2 jours)
+  │   └─ Show rejection reasons
+  │   └─ Edit & resubmit
+  │   └─ Correction history
+  │
+  ├─ DASH-002 🔴 Frontend: Admin Dashboard (2-3 jours)
+  │   └─ app/admin/page.tsx ou /dashboard
+  │   └─ KPI cards, charts, tables
+  │   └─ Schools by type/level
+  │   └─ Submission trends, validation progress
+  │
+  ├─ DASH-003 🟡 Frontend: School Personal Dashboard (1-2 jours)
+  │   └─ School profile status
+  │   └─ Active campaigns + deadlines
+  │   └─ Declaration status per campaign
+  │
+  ├─ STAT-002 🔴 Frontend: Interactive Analytics (2-3 jours)
+  │   └─ Charts/graphs (Chart.js or Recharts)
+  │   └─ Schools by type/level
+  │   └─ Student/teacher distribution
+  │   └─ Infrastructure, year-over-year trends
+  │
+  ├─ STAT-004 🟡 Frontend: Statistical Filters (1-2 jours)
+  │   └─ Year, level, type, city filters
+  │   └─ Dynamic updates
+  │   └─ Save custom reports
+  │
+  └─ EXPORT-004 🟡 Frontend: Export Interface (1 jour)
+      └─ Export button on dashboard
+      └─ Format selection (PDF/Excel/CSV)
+      └─ Date range picker, report type
+      └─ Download progress indicator
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📂 DOSSIER: sql/
+═════════════════
+Migrations SQL PostgreSQL
+
+✓ 01_roles_permissions_migration.sql
+  ├─ CREATE TABLE roles
+  │   └─ id, name (UNIQUE), display_name, description
+  │   └─ Insert: admin, school_director
+  │
+  ├─ CREATE TABLE permissions
+  │   └─ id, name (UNIQUE), description
+  │   └─ Insert: 28 permissions (users.*, schools.*, campaigns.*, etc)
+  │
+  ├─ CREATE TABLE role_permission (PIVOT)
+  │   └─ role_id, permission_id (PK)
+  │   └─ Assign all permissions to admin role
+  │   └─ Assign specific permissions to school_director
+  │
+  └─ ALTER TABLE users
+      └─ ADD role_id (FK to roles)
+
+✓ 02_etablissements_migration.sql
+  └─ CREATE TABLE etablissements
+      ├─ id BIGSERIAL PK
+      ├─ code (UNIQUE), name, type (public/privé)
+      ├─ level, city, address
+      ├─ director_id, director_name, director_phone, director_email
+      ├─ phone, email, created_year
+      ├─ latitude, longitude (geographic)
+      ├─ status (active/closed/archived)
+      ├─ created_at, updated_at, deleted_at (soft delete)
+      └─ Indexes: type, city, level, director_id, status, deleted_at
+
+✓ 03_campaigns_declarations_migration.sql
+  ├─ CREATE TABLE campaigns
+  │   ├─ id, title, description, reference_year
+  │   ├─ opening_date, closing_date
+  │   ├─ status (draft/active/closed)
+  │   ├─ is_archived, archived_at
+  │   ├─ created_by (FK to users)
+  │   └─ created_at, updated_at
+  │   └─ Indexes: status, reference_year, is_archived
+  │
+  ├─ CREATE TABLE declarations
+  │   ├─ id, campaign_id (FK), etablissement_id (FK)
+  │   ├─ status (draft/submitted/pending_review/validated/rejected)
+  │   ├─ student_count, teacher_count, admin_staff_count
+  │   ├─ classrooms_count, laboratories_count, libraries_count
+  │   ├─ sports_facilities, priority_needs, observations
+  │   ├─ submitted_at, validated_at, validated_by (FK)
+  │   ├─ rejection_reason
+  │   ├─ created_at, updated_at
+  │   ├─ UNIQUE(campaign_id, etablissement_id)
+  │   └─ Indexes: campaign_id, etablissement_id, status
+  │
+  └─ CREATE TABLE declaration_audits
+      ├─ id, declaration_id (FK), action
+      ├─ old_values (JSONB), new_values (JSONB)
+      ├─ user_id (FK), ip_address, user_agent
+      ├─ created_at
+      └─ Indexes: declaration_id, user_id, created_at
+
+✓ 04_documents_migration.sql
+  └─ CREATE TABLE documents
+      ├─ id, declaration_id (FK)
+      ├─ type (decree/approval/plan/photos/reports)
+      ├─ name, file_path, file_size, mime_type
+      ├─ version, validation_status (pending/approved/rejected)
+      ├─ uploaded_by (FK), validated_by (FK)
+      ├─ rejection_reason
+      ├─ uploaded_at, validated_at
+      ├─ created_at, updated_at
+      └─ Indexes: declaration_id, status, type, uploaded_by
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 RÉSUMÉ STATISTIQUES
+══════════════════════
+
+Total Fichiers Créés:    15
+├─ Documentation:        5  (README, INDEX, PHASES, FICHIERS_CRÉÉS, plan.md)
+├─ Backend Modules:      7
+├─ Frontend Modules:     1
+└─ SQL Migrations:       4
+
+Total Tickets Décrits:   44
+├─ Backend:            24
+├─ Frontend:           20
+├─ Priorité HIGH:      28 🔴
+└─ Priorité MEDIUM:    16 🟡
+
+Durée Estimée Total:   8-11 semaines
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 COMMENT DÉMARRER
+═══════════════════
+
+1. Lire: README.md
+2. Comprendre: PHASES_DE_DÉVELOPPEMENT.md
+3. Consulter: INDEX.md pour accéder à un ticket spécifique
+4. Implémenter: Suivre les checklist des tickets
+5. Tester: Respecter les acceptance criteria
+
+🎯 PREMIÈRE PHASE (Foundation - 2-3 semaines):
+- AUTH-001 (Backend Sanctum)
+- AUTH-002, AUTH-003 (Frontend login & protection)
+- USER-001, USER-002 (RBAC)
+- SCHOOL-001, SCHOOL-002, SCHOOL-003 (Schools CRUD)
+
+═════════════════════════════════════════════════════════════════════════════

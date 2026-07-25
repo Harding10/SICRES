@@ -1,0 +1,14 @@
+# Fichiers OS / Système
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Dossiers d'éditeurs (IDE)
+.idea/
+.vscode/
+.fleet/
+.cursor/
+*.code-workspace
+
+# Les dossiers backend/ et frontend/ ont leurs propres fichiers .gitignore,
+# ce fichier gère seulement la racine.

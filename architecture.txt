@@ -1,0 +1,274 @@
+.
+├── architecture.txt
+├── backend
+│   ├── app
+│   │   ├── Actions
+│   │   ├── Console
+│   │   ├── DTO
+│   │   ├── Enums
+│   │   ├── Events
+│   │   ├── Exceptions
+│   │   ├── Helpers
+│   │   ├── Http
+│   │   │   ├── Controllers
+│   │   │   │   ├── Auth
+│   │   │   │   │   ├── AuthenticatedSessionController.php
+│   │   │   │   │   ├── EmailVerificationNotificationController.php
+│   │   │   │   │   ├── NewPasswordController.php
+│   │   │   │   │   ├── PasswordResetLinkController.php
+│   │   │   │   │   ├── RegisteredUserController.php
+│   │   │   │   │   └── VerifyEmailController.php
+│   │   │   │   └── Controller.php
+│   │   │   ├── Middleware
+│   │   │   │   └── EnsureEmailIsVerified.php
+│   │   │   ├── Requests
+│   │   │   │   └── Auth
+│   │   │   │       └── LoginRequest.php
+│   │   │   └── Resources
+│   │   ├── Jobs
+│   │   ├── Listeners
+│   │   ├── Mail
+│   │   ├── Models
+│   │   │   └── User.php
+│   │   ├── Modules
+│   │   │   ├── Auth
+│   │   │   ├── Campagnes
+│   │   │   ├── Dashboard
+│   │   │   ├── Declarations
+│   │   │   ├── Documents
+│   │   │   ├── Etablissements
+│   │   │   ├── Roles
+│   │   │   ├── Statistiques
+│   │   │   └── Users
+│   │   ├── Notifications
+│   │   ├── Observers
+│   │   ├── Policies
+│   │   ├── Providers
+│   │   │   └── AppServiceProvider.php
+│   │   ├── Repositories
+│   │   │   ├── Contracts
+│   │   │   └── Eloquent
+│   │   ├── Services
+│   │   └── Traits
+│   ├── artisan
+│   ├── bootstrap
+│   │   ├── app.php
+│   │   ├── cache
+│   │   │   ├── .gitignore
+│   │   │   ├── packages.php
+│   │   │   └── services.php
+│   │   └── providers.php
+│   ├── composer.json
+│   ├── composer.lock
+│   ├── config
+│   │   ├── app.php
+│   │   ├── auth.php
+│   │   ├── cache.php
+│   │   ├── cors.php
+│   │   ├── database.php
+│   │   ├── filesystems.php
+│   │   ├── logging.php
+│   │   ├── mail.php
+│   │   ├── queue.php
+│   │   ├── sanctum.php
+│   │   ├── services.php
+│   │   └── session.php
+│   ├── database
+│   │   ├── factories
+│   │   │   └── UserFactory.php
+│   │   ├── .gitignore
+│   │   ├── migrations
+│   │   │   ├── 0001_01_01_000000_create_users_table.php
+│   │   │   ├── 0001_01_01_000001_create_cache_table.php
+│   │   │   ├── 0001_01_01_000002_create_jobs_table.php
+│   │   │   └── 2026_07_15_114913_create_personal_access_tokens_table.php
+│   │   └── seeders
+│   │       └── DatabaseSeeder.php
+│   ├── .editorconfig
+│   ├── .env
+│   ├── .env.example
+│   ├── .gitattributes
+│   ├── .gitignore
+│   ├── .idea
+│   │   ├── .gitignore
+│   │   └── workspace.xml
+│   ├── .npmrc
+│   ├── phpunit.xml
+│   ├── public
+│   │   ├── favicon.ico
+│   │   ├── .htaccess
+│   │   ├── index.php
+│   │   └── robots.txt
+│   ├── README.md
+│   ├── resources
+│   │   └── views
+│   │       └── .gitkeep
+│   ├── routes
+│   │   ├── api.php
+│   │   ├── auth.php
+│   │   ├── console.php
+│   │   └── web.php
+│   ├── storage
+│   │   ├── app
+│   │   │   ├── .gitignore
+│   │   │   ├── private
+│   │   │   │   └── .gitignore
+│   │   │   └── public
+│   │   │       └── .gitignore
+│   │   ├── framework
+│   │   │   ├── cache
+│   │   │   │   ├── data
+│   │   │   │   │   └── .gitignore
+│   │   │   │   └── .gitignore
+│   │   │   ├── .gitignore
+│   │   │   ├── sessions
+│   │   │   │   └── .gitignore
+│   │   │   ├── testing
+│   │   │   │   └── .gitignore
+│   │   │   └── views
+│   │   │       └── .gitignore
+│   │   └── logs
+│   │       ├── .gitignore
+│   │       └── laravel.log
+│   └── tests
+│       ├── Feature
+│       │   ├── Auth
+│       │   │   ├── AuthenticationTest.php
+│       │   │   ├── EmailVerificationTest.php
+│       │   │   ├── PasswordResetTest.php
+│       │   │   └── RegistrationTest.php
+│       │   └── ExampleTest.php
+│       ├── TestCase.php
+│       └── Unit
+│           └── ExampleTest.php
+├── compose.yaml
+├── docker
+│   ├── mailpit
+│   ├── nginx
+│   │   ├── default.conf
+│   │   ├── Dockerfile
+│   │   └── nginx.conf
+│   ├── php
+│   │   ├── Dockerfile
+│   │   ├── Dockerfile.dev
+│   │   ├── Dockerfile.prod
+│   │   ├── entrypoint.sh
+│   │   ├── php.ini
+│   │   └── www.conf
+│   ├── postgres
+│   │   ├── backups
+│   │   ├── conf
+│   │   └── init.sql
+│   ├──  scripts
+│   └── scripts
+├── docs
+│   ├── 02-UseCase.md
+│   ├──  03-MCD.md
+│   ├──  04-SchemaRelationnel.md
+│   ├── 05-Maquettes.md
+│   ├── 06-API.md
+│   ├── 07-TODAY.md
+│   ├── adr
+│   ├── api
+│   ├── architecture
+│   ├── database
+│   ├── deployment
+│   ├── diagrams
+│   ├── guides
+│   ├── meeting-notes
+│   ├── reports
+│   └── SICRES_Cahier_des_Charges_Fonctionnel.pdf
+├── .env
+├── frontend
+│   ├── AGENTS.md
+│   ├── api
+│   ├── app
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── assets
+│   ├── CLAUDE.md
+│   ├── components
+│   │   ├── charts
+│   │   ├── common
+│   │   ├── forms
+│   │   ├── layout
+│   │   ├── tables
+│   │   └── ui
+│   ├── constants
+│   ├── contexts
+│   ├── eslint.config.mjs
+│   ├── features
+│   │   ├── auth
+│   │   ├── campagnes
+│   │   ├── dashboard
+│   │   ├── declarations
+│   │   ├── documents
+│   │   ├── etablissements
+│   │   └── users
+│   ├── .gitignore
+│   ├── hooks
+│   ├── lib
+│   ├── next.config.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── postcss.config.mjs
+│   ├── providers
+│   ├── public
+│   │   ├── file.svg
+│   │   ├── globe.svg
+│   │   ├── next.svg
+│   │   ├── vercel.svg
+│   │   └── window.svg
+│   ├── README.md
+│   ├── services
+│   ├── store
+│   ├── styles
+│   ├── tsconfig.json
+│   ├── types
+│   ├── utils
+│   │   └── api.js
+│   └── validations
+├── .github
+│   └── workflows
+│       ├── backend-ci.yml
+│       ├── deploy.yml
+│       ├── docker.yml
+│       └── frontend-ci.yml
+├── .idea
+│   ├── .gitignore
+│   ├── laravel-idea.xml
+│   ├── modules.xml
+│   ├── phpunit.xml
+│   ├── php.xml
+│   ├── SICRES.iml
+│   ├── vcs.xml
+│   └── workspace.xml
+├── postman
+├── README.md
+└── Tikers
+    ├── FICHIERS_CRÉÉS.txt
+    ├── INDEX.md
+    ├── PHASES_DE_DÉVELOPPEMENT.md
+    ├── README.md
+    ├── sql
+    │   ├── 01_roles_permissions_migration.sql
+    │   ├── 02_etablissements_migration.sql
+    │   ├── 03_campaigns_declarations_migration.sql
+    │   └── 04_documents_migration.sql
+    ├── TikerFront
+    │   ├── MODULE_1_AUTHENTIFICATION.md
+    │   ├── MODULE_2_UTILISATEURS.md
+    │   ├── MODULE_3_ETABLISSEMENTS.md
+    │   └── MODULE_4_5_6_7_8_9_10.md
+    └── TikersBack
+        ├── MODULE_1_AUTHENTIFICATION.md
+        ├── MODULE_2_UTILISATEURS.md
+        ├── MODULE_3_ETABLISSEMENTS.md
+        ├── MODULE_4_CAMPAGNES.md
+        ├── MODULE_5_DECLARATIONS.md
+        ├── MODULE_6_DOCUMENTS.md
+        └── MODULE_7_8_9_10.md
+
+125 directories, 147 files
