@@ -1,92 +1,369 @@
-# Documentation de l'API (SICRES)
+# Documentation API REST — SICRES
 
-Cette documentation décrit les points de terminaison (endpoints) de l'API de base du projet, qui utilise actuellement **Laravel Breeze (API Stack)** avec **Laravel Sanctum** pour l'authentification SPA.
-
-## URL de base
-L'API est accessible à l'adresse définie dans `APP_URL` :
-- **Backend URL :** `http://localhost:8000`
-- **Frontend URL :** `http://localhost:3000`
-
-## Authentification (Laravel Sanctum)
-L'authentification est gérée par session (stateful) pour les SPA (Single Page Applications) de premier niveau. 
-Avant de faire une requête de connexion (`/login`) ou d'inscription (`/register`), l'application frontend doit effectuer une requête vers `/sanctum/csrf-cookie` pour initialiser la protection CSRF.
-
-### 1. CSRF Cookie
-- **Méthode :** `GET`
-- **Endpoint :** `/sanctum/csrf-cookie`
-- **Description :** Initialise le cookie `XSRF-TOKEN` nécessaire pour toutes les futures requêtes POST, PUT ou DELETE.
+> **Version :** 1.0
+> **Base URL :** `http://localhost/api` (dev) | `https://sicres.cm/api` (prod)
+> **Authentification :** Laravel Sanctum (session cookie SPA)
+> **Format :** JSON (`Content-Type: application/json`)
 
 ---
 
-## Endpoints d'Authentification (Breeze)
+## Conventions
 
-Toutes ces requêtes attendent un header `Accept: application/json`.
+### Format des reponses
 
-### 2. Inscription (Register)
-- **Méthode :** `POST`
-- **Endpoint :** `/register`
-- **Paramètres JSON (Body) :**
-  - `name` (string, requis)
-  - `email` (string, email, requis)
-  - `password` (string, requis, min: 8)
-  - `password_confirmation` (string, requis)
-- **Réponse Succès :** `204 No Content` (L'utilisateur est créé, connecté, et la session est initialisée).
+**Succes (liste) :**
+```json
+{
+  "data": [ { ... }, { ... } ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 5,
+    "per_page": 15,
+    "total": 73
+  }
+}
+```
 
-### 3. Connexion (Login)
-- **Méthode :** `POST`
-- **Endpoint :** `/login`
-- **Paramètres JSON (Body) :**
-  - `email` (string, email, requis)
-  - `password` (string, requis)
-- **Réponse Succès :** `204 No Content` (La session de l'utilisateur est générée).
+**Succes (element unique) :**
+```json
+{
+  "data": { "id": 1, "nom": "...", ... }
+}
+```
 
-### 4. Déconnexion (Logout)
-- **Méthode :** `POST`
-- **Endpoint :** `/logout`
-- **Description :** Détruit la session active de l'utilisateur.
-- **Réponse Succès :** `204 No Content`
+**Erreur de validation (422) :**
+```json
+{
+  "message": "The given data was invalid.",
+  "errors": {
+    "nom": ["Le champ nom est obligatoire."],
+    "email": ["L'adresse email est invalide."]
+  }
+}
+```
 
-### 5. Obtenir l'utilisateur connecté
-- **Méthode :** `GET`
-- **Endpoint :** `/api/user`
-- **Description :** Renvoie les données de l'utilisateur actuellement authentifié. Ce endpoint est protégé par le middleware `auth:sanctum`.
-- **Réponse Succès :** `200 OK` (Retourne l'objet JSON de l'utilisateur).
-  - *Exemple :* `{"id": 1, "name": "John Doe", "email": "john@example.com", ...}`
+**Erreur serveur (500) :**
+```json
+{
+  "message": "Server Error"
+}
+```
 
----
+### Headers requis
 
-## Gestion des Mots de Passe
-
-### 6. Mot de passe oublié (Lien de réinitialisation)
-- **Méthode :** `POST`
-- **Endpoint :** `/forgot-password`
-- **Paramètres JSON (Body) :**
-  - `email` (string, email, requis)
-- **Réponse Succès :** `200 OK` (Un email avec un lien de réinitialisation a été envoyé).
-- **Réponse d'Erreur :** `422 Unprocessable Entity` si l'email n'existe pas.
-
-### 7. Réinitialiser le mot de passe
-- **Méthode :** `POST`
-- **Endpoint :** `/reset-password`
-- **Paramètres JSON (Body) :**
-  - `token` (string, requis)
-  - `email` (string, email, requis)
-  - `password` (string, requis, min: 8)
-  - `password_confirmation` (string, requis)
-- **Réponse Succès :** `200 OK` (Le mot de passe a été mis à jour).
+```http
+Accept: application/json
+Content-Type: application/json
+X-XSRF-TOKEN: <token CSRF>   ← obligatoire pour POST/PUT/DELETE
+```
 
 ---
 
-## Vérification d'Email
+## Authentification
 
-*(Si la fonctionnalité `MustVerifyEmail` est activée sur le modèle User)*
+Voir le guide complet : [03-Guide-API-Sanctum.md](../guides/03-Guide-API-Sanctum.md)
 
-### 8. Renvoyer l'email de vérification
-- **Méthode :** `POST`
-- **Endpoint :** `/email/verification-notification`
-- **Réponse Succès :** `200 OK` (Email envoyé).
+| Methode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/sanctum/csrf-cookie` | Initialiser la protection CSRF |
+| POST | `/register` | Creer un compte utilisateur |
+| POST | `/login` | Se connecter |
+| POST | `/logout` | Se deconnecter |
+| GET | `/api/user` | Obtenir l'utilisateur connecte |
+| POST | `/forgot-password` | Demander un lien de reinitialisation |
+| POST | `/reset-password` | Reinitialiser le mot de passe |
 
-### 9. Vérifier l'email
-- **Méthode :** `GET`
-- **Endpoint :** `/verify-email/{id}/{hash}`
-- **Description :** Lien cliqué par l'utilisateur depuis son email pour valider son compte. L'application frontend doit gérer cette redirection.
+---
+
+## Etablissements
+
+### Lister les etablissements
+
+```http
+GET /api/etablissements
+```
+
+**Parametres de requete (query) :**
+
+| Parametre | Type | Description |
+|-----------|------|-------------|
+| `page` | integer | Numero de page (defaut: 1) |
+| `per_page` | integer | Elements par page (defaut: 15, max: 100) |
+| `search` | string | Recherche par nom |
+| `type` | string | Filtrer par type (primaire, secondaire_general...) |
+| `secteur` | string | Filtrer par secteur (public, prive_laic...) |
+| `region` | string | Filtrer par region |
+
+**Reponse 200 :**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "nom": "Lycee de Yaounde",
+      "code": "LYD-001",
+      "type": "secondaire_general",
+      "secteur": "public",
+      "region": "Centre",
+      "ville": "Yaounde",
+      "telephone": "+237 222 000 001",
+      "email": "contact@lycee-yaounde.cm",
+      "created_at": "2026-01-15T08:00:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 12,
+    "per_page": 15,
+    "total": 172
+  }
+}
+```
+
+---
+
+### Voir un etablissement
+
+```http
+GET /api/etablissements/{id}
+```
+
+**Reponse 200 :**
+```json
+{
+  "data": {
+    "id": 1,
+    "nom": "Lycee de Yaounde",
+    "code": "LYD-001",
+    "type": "secondaire_general",
+    "secteur": "public",
+    "region": "Centre",
+    "ville": "Yaounde",
+    "adresse": "Avenue Kennedy, Yaounde",
+    "telephone": "+237 222 000 001",
+    "email": "contact@lycee-yaounde.cm",
+    "directeur": "M. Jean Nkolo",
+    "date_creation": "1975-09-01",
+    "statut": "actif",
+    "created_at": "2026-01-15T08:00:00Z",
+    "updated_at": "2026-07-01T10:00:00Z"
+  }
+}
+```
+
+**Reponse 404 :**
+```json
+{ "message": "Etablissement non trouve." }
+```
+
+---
+
+### Creer un etablissement
+
+```http
+POST /api/etablissements
+```
+
+**Corps (JSON) :**
+```json
+{
+  "nom": "College Bilingue de Douala",
+  "type": "secondaire_general",
+  "secteur": "prive_laic",
+  "region": "Littoral",
+  "ville": "Douala",
+  "adresse": "Rue du Commerce, Akwa",
+  "telephone": "+237 233 000 002",
+  "email": "contact@college-douala.cm",
+  "directeur": "Mme Claire Mbida"
+}
+```
+
+**Validation :**
+
+| Champ | Regles |
+|-------|--------|
+| `nom` | requis, string, max:255 |
+| `type` | requis, enum: primaire, secondaire_general, secondaire_technique, superieur |
+| `secteur` | requis, enum: public, prive_laic, prive_confessionnel |
+| `region` | requis, string |
+| `ville` | requis, string |
+| `email` | optionnel, email valide |
+
+**Reponse 201 :**
+```json
+{
+  "data": { "id": 2, "nom": "College Bilingue de Douala", ... },
+  "message": "Etablissement cree avec succes."
+}
+```
+
+---
+
+### Modifier un etablissement
+
+```http
+PUT /api/etablissements/{id}
+```
+
+Corps identique au POST. Seuls les champs envoyes sont mis a jour.
+
+**Reponse 200 :**
+```json
+{
+  "data": { ... },
+  "message": "Etablissement mis a jour."
+}
+```
+
+---
+
+### Supprimer un etablissement
+
+```http
+DELETE /api/etablissements/{id}
+```
+
+**Reponse 204 :** Pas de corps (suppression reussie).
+
+---
+
+## Declarations
+
+Une declaration est une soumission de donnees pour une campagne de recensement.
+
+### Lister les declarations
+
+```http
+GET /api/declarations
+```
+
+**Parametres :**
+
+| Parametre | Description |
+|-----------|-------------|
+| `statut` | brouillon, soumis, en_revision, valide, rejete |
+| `campagne_id` | Filtrer par campagne |
+| `etablissement_id` | Filtrer par etablissement |
+
+**Reponse 200 :**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "etablissement_id": 1,
+      "campagne_id": 2026,
+      "statut": "soumis",
+      "soumis_le": "2026-03-15T14:30:00Z",
+      "valide_le": null
+    }
+  ],
+  "meta": { ... }
+}
+```
+
+---
+
+### Soumettre une declaration
+
+```http
+POST /api/declarations
+```
+
+**Corps :**
+```json
+{
+  "etablissement_id": 1,
+  "campagne_id": 2026,
+  "effectif_total": 1250,
+  "effectif_filles": 610,
+  "effectif_garcons": 640,
+  "nombre_enseignants": 72,
+  "nombre_salles": 30,
+  "donnees_specifiques": {
+    "niveau": "secondaire",
+    "classes": ["6eme", "5eme", "4eme", "3eme"]
+  }
+}
+```
+
+**Reponse 201 :**
+```json
+{
+  "data": { "id": 42, "statut": "soumis", ... },
+  "message": "Declaration soumise avec succes. Un email de confirmation vous a ete envoye."
+}
+```
+
+---
+
+### Valider une declaration (role : directeur regional ou admin)
+
+```http
+PATCH /api/declarations/{id}/valider
+```
+
+**Corps :**
+```json
+{
+  "commentaire": "Declaration conforme, approuvee."
+}
+```
+
+**Reponse 200 :**
+```json
+{
+  "data": { "id": 42, "statut": "valide", "valide_le": "2026-04-01T09:00:00Z" },
+  "message": "Declaration validee."
+}
+```
+
+---
+
+### Rejeter une declaration
+
+```http
+PATCH /api/declarations/{id}/rejeter
+```
+
+**Corps :**
+```json
+{
+  "raison": "Les effectifs declares ne correspondent pas aux donnees precedentes."
+}
+```
+
+---
+
+## Utilisateurs (role : admin)
+
+| Methode | Endpoint | Description |
+|---------|----------|-------------|
+| GET | `/api/users` | Lister les utilisateurs |
+| GET | `/api/users/{id}` | Voir un utilisateur |
+| POST | `/api/users` | Creer un utilisateur |
+| PUT | `/api/users/{id}` | Modifier un utilisateur |
+| DELETE | `/api/users/{id}` | Supprimer un utilisateur |
+| PATCH | `/api/users/{id}/statut` | Activer/suspendre un compte |
+
+---
+
+## Codes HTTP utilises
+
+| Code | Signification |
+|------|---------------|
+| `200 OK` | Succes avec corps |
+| `201 Created` | Ressource creee |
+| `204 No Content` | Succes sans corps |
+| `401 Unauthorized` | Non authentifie |
+| `403 Forbidden` | Non autorise (role insuffisant) |
+| `404 Not Found` | Ressource introuvable |
+| `419 CSRF Token Mismatch` | Token CSRF absent ou expire |
+| `422 Unprocessable Entity` | Erreurs de validation |
+| `429 Too Many Requests` | Rate limit depasse |
+| `500 Internal Server Error` | Erreur serveur |
+
+---
+
+*Documentation API SICRES — Juillet 2026*

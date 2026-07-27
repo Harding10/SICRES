@@ -1,14 +1,38 @@
-# Fichiers OS / Système
+# =============================================================================
+# .gitignore — SICRES (racine du projet)
+# =============================================================================
+
+# === Fichiers OS / Système ===
 .DS_Store
 Thumbs.db
 Desktop.ini
 
-# Dossiers d'éditeurs (IDE)
+# === Éditeurs (IDE) ===
 .idea/
 .vscode/
 .fleet/
 .cursor/
 *.code-workspace
 
-# Les dossiers backend/ et frontend/ ont leurs propres fichiers .gitignore,
-# ce fichier gère seulement la racine.
+# === Environnements (NE JAMAIS VERSIONNER) ===
+.env
+.env.local
+.env.*.local
+# Autoriser le modèle exemple
+!.env.example
+
+# === Docker — données persistantes ===
+docker/postgres/backups/*.sql
+docker/postgres/backups/*.dump
+# Conserver le dossier vide
+!docker/postgres/backups/.gitkeep
+
+# === Certificats SSL ===
+docker/nginx/certs/*.crt
+docker/nginx/certs/*.key
+docker/nginx/certs/*.pem
+
+# === Logs Docker ===
+*.log
+
+# Les dossiers backend/ et frontend/ ont leurs propres .gitignore

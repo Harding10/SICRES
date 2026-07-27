@@ -1,0 +1,79 @@
+###############################################################################
+# Dockerfile.prod - PHP-FPM Production image for SICRES
+# Standalone, optimized build (no Xdebug, no dev tools)
+# Usage: docker build -f docker/php/Dockerfile.prod -t sicres/php:prod .
+###############################################################################
+
+FROM php:8.4-fpm AS base
+
+LABEL maintainer="BEH DEGRY JEREMIE HARDING"
+LABEL project="SICRES"
+LABEL description="Laravel 13 backend - production image"
+
+WORKDIR /var/www/html
+
+# Timezone
+ENV TZ=Africa/Douala
+
+# System dependencies
+RUN apt-get update && apt-get install -y \
+    git curl unzip zip \
+    libpq-dev libzip-dev libicu-dev \
+    libonig-dev libxml2-dev libpng-dev \
+    libjpeg62-turbo-dev libfreetype6-dev \
+    libwebp-dev tzdata \
+    && cp /usr/share/zoneinfo/Africa/Douala /etc/localtime \
+    && echo "Africa/Douala" > /etc/timezone \
+    && rm -rf /var/lib/apt/lists/*
+
+# GD with JPEG + FreeType + WebP
+RUN docker-php-ext-configure gd \
+    --with-freetype --with-jpeg --with-webp
+
+# PHP extensions
+RUN docker-php-ext-install \
+    pdo pdo_pgsql pgsql \
+    mbstring bcmath intl zip \
+    exif pcntl gd xml sockets opcache
+
+# Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Composer
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# OPcache - production settings (timestamps disabled for max perf)
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.memory_consumption=256" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.interned_strings_buffer=16" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.save_comments=1" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.fast_shutdown=1" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Copy only backend source code
+COPY --chown=www-data:www-data backend/ /var/www/html
+
+# Install production dependencies only
+RUN composer install \
+    --no-interaction \
+    --no-dev \
+    --prefer-dist \
+    --optimize-autoloader \
+    --classmap-authoritative
+
+# Set storage permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Entrypoint
+COPY docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 9000
+
+USER www-data
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm"]
