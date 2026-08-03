@@ -8,6 +8,7 @@
 │   │   ├── Enums
 │   │   ├── Events
 │   │   ├── Exceptions
+│   │   │   └── AccountTypeConflictException.php
 │   │   ├── Helpers
 │   │   ├── Http
 │   │   │   ├── Controllers
@@ -29,6 +30,9 @@
 │   │   ├── Listeners
 │   │   ├── Mail
 │   │   ├── Models
+│   │   │   ├── AdminCommunal.php
+│   │   │   ├── Commune.php
+│   │   │   ├── ResponsableEtablissement.php
 │   │   │   └── User.php
 │   │   ├── Modules
 │   │   │   ├── Auth
@@ -42,6 +46,8 @@
 │   │   │   └── Users
 │   │   ├── Notifications
 │   │   ├── Observers
+│   │   │   ├── AdminCommunalObserver.php
+│   │   │   └── ResponsableEtablissementObserver.php
 │   │   ├── Policies
 │   │   ├── Providers
 │   │   │   └── AppServiceProvider.php
@@ -54,8 +60,10 @@
 │   ├── bootstrap
 │   │   ├── app.php
 │   │   ├── cache
+│   │   │   ├── config.php
 │   │   │   ├── .gitignore
 │   │   │   ├── packages.php
+│   │   │   ├── routes-v7.php
 │   │   │   └── services.php
 │   │   └── providers.php
 │   ├── composer.json
@@ -81,7 +89,10 @@
 │   │   │   ├── 0001_01_01_000000_create_users_table.php
 │   │   │   ├── 0001_01_01_000001_create_cache_table.php
 │   │   │   ├── 0001_01_01_000002_create_jobs_table.php
-│   │   │   └── 2026_07_15_114913_create_personal_access_tokens_table.php
+│   │   │   ├── 2026_07_15_114913_create_personal_access_tokens_table.php
+│   │   │   ├── 2026_07_28_080000_create_communes_table.php
+│   │   │   ├── 2026_07_28_095311_create_admin_communals_table.php
+│   │   │   └── 2026_07_28_095630_create_responsable_etablissements_table.php
 │   │   └── seeders
 │   │       └── DatabaseSeeder.php
 │   ├── .editorconfig
@@ -93,12 +104,14 @@
 │   │   ├── .gitignore
 │   │   └── workspace.xml
 │   ├── .npmrc
+│   ├── .phpunit.result.cache
 │   ├── phpunit.xml
 │   ├── public
 │   │   ├── favicon.ico
 │   │   ├── .htaccess
 │   │   ├── index.php
-│   │   └── robots.txt
+│   │   ├── robots.txt
+│   │   └── storage -> /var/www/html/storage/app/public
 │   ├── README.md
 │   ├── resources
 │   │   └── views
@@ -132,6 +145,7 @@
 │   │       └── laravel.log
 │   └── tests
 │       ├── Feature
+│       │   ├── AccountTypeExclusivityTest.php
 │       │   ├── Auth
 │       │   │   ├── AuthenticationTest.php
 │       │   │   ├── EmailVerificationTest.php
@@ -153,14 +167,17 @@
 │   │   ├── Dockerfile.dev
 │   │   ├── Dockerfile.prod
 │   │   ├── entrypoint.sh
+│   │   ├── php.dev.ini
 │   │   ├── php.ini
 │   │   └── www.conf
 │   ├── postgres
 │   │   ├── backups
+│   │   │   └── .gitkeep
 │   │   ├── conf
 │   │   └── init.sql
-│   ├──  scripts
 │   └── scripts
+│       ├── backup.sh
+│       └── healthcheck.sh
 ├── docs
 │   ├── 02-UseCase.md
 │   ├──  03-MCD.md
@@ -169,16 +186,43 @@
 │   ├── 06-API.md
 │   ├── 07-TODAY.md
 │   ├── adr
+│   │   ├── ADR-001-Laravel.md
+│   │   ├── ADR-002-NextJS.md
+│   │   ├── ADR-003-PostgreSQL.md
+│   │   ├── ADR-004-Docker.md
+│   │   ├── ADR-005-REST.md
+│   │   └── ADR-006-Architecture-Modulaire.md
 │   ├── api
 │   ├── architecture
+│   │   ├── 01-Vue-d-ensemble.md
+│   │   ├── 02-Architecture-backend.md
+│   │   ├── 03-Architecture-frontend.md
+│   │   ├── 04-Architecture-docker.md
+│   │   ├── 05-Structure-des-dossiers.md
+│   │   ├── 06-Conventions-de-developpement.md
+│   │   ├── 07-Decisions-techniques.md
+│   │   └── README.md
+│   ├── CODING-STANDARDS.md
+│   ├── conventions_nommage_laravel.pdf
 │   ├── database
 │   ├── deployment
+│   │   ├── 01-Infrastructure-Docker.md
+│   │   └── 02-Guide-Deploiement-Production.md
 │   ├── diagrams
+│   ├── Guide_Collaboration_GitHub.pdf
 │   ├── guides
+│   │   ├── 01-Guide-Developpeur.md
+│   │   ├── 02-Guide-Makefile.md
+│   │   ├── 03-Guide-API-Sanctum.md
+│   │   └── 04-Guide-Tests.md
 │   ├── meeting-notes
+│   ├── README.md
 │   ├── reports
-│   └── SICRES_Cahier_des_Charges_Fonctionnel.pdf
+│   ├── SICRES_Cahier_des_Charges_Fonctionnel.pdf
+│   ├── SICRES_Guide_Equipe_Junior_avec_badges.pdf
+│   └── SICRES_MCD_MLD_UML.pdf
 ├── .env
+├── .env.example
 ├── frontend
 │   ├── AGENTS.md
 │   ├── api
@@ -198,6 +242,7 @@
 │   │   └── ui
 │   ├── constants
 │   ├── contexts
+│   ├── Dockerfile
 │   ├── eslint.config.mjs
 │   ├── features
 │   │   ├── auth
@@ -211,6 +256,7 @@
 │   ├── hooks
 │   ├── lib
 │   ├── next.config.ts
+│   ├── next-env.d.ts
 │   ├── package.json
 │   ├── package-lock.json
 │   ├── postcss.config.mjs
@@ -228,7 +274,7 @@
 │   ├── tsconfig.json
 │   ├── types
 │   ├── utils
-│   │   └── api.js
+│   │   └── api.ts
 │   └── validations
 ├── .github
 │   └── workflows
@@ -236,7 +282,12 @@
 │       ├── deploy.yml
 │       ├── docker.yml
 │       └── frontend-ci.yml
+├── .gitignore
 ├── .idea
+│   ├── dataSources
+│   │   └── data_sources_history.xml
+│   ├── dataSources.local.xml
+│   ├── dataSources.xml
 │   ├── .gitignore
 │   ├── laravel-idea.xml
 │   ├── modules.xml
@@ -245,30 +296,8 @@
 │   ├── SICRES.iml
 │   ├── vcs.xml
 │   └── workspace.xml
+├── Makefile
 ├── postman
-├── README.md
-└── Tikers
-    ├── FICHIERS_CRÉÉS.txt
-    ├── INDEX.md
-    ├── PHASES_DE_DÉVELOPPEMENT.md
-    ├── README.md
-    ├── sql
-    │   ├── 01_roles_permissions_migration.sql
-    │   ├── 02_etablissements_migration.sql
-    │   ├── 03_campaigns_declarations_migration.sql
-    │   └── 04_documents_migration.sql
-    ├── TikerFront
-    │   ├── MODULE_1_AUTHENTIFICATION.md
-    │   ├── MODULE_2_UTILISATEURS.md
-    │   ├── MODULE_3_ETABLISSEMENTS.md
-    │   └── MODULE_4_5_6_7_8_9_10.md
-    └── TikersBack
-        ├── MODULE_1_AUTHENTIFICATION.md
-        ├── MODULE_2_UTILISATEURS.md
-        ├── MODULE_3_ETABLISSEMENTS.md
-        ├── MODULE_4_CAMPAGNES.md
-        ├── MODULE_5_DECLARATIONS.md
-        ├── MODULE_6_DOCUMENTS.md
-        └── MODULE_7_8_9_10.md
+└── README.md
 
-125 directories, 147 files
+121 directories, 180 files
