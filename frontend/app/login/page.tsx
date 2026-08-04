@@ -39,7 +39,7 @@ export default function LoginPage() {
 
 
           <span className="font-semibold text-white text-lg drop-shadow-md">
-            SICRES
+            SICREE
           </span>
 
 
@@ -56,7 +56,7 @@ export default function LoginPage() {
           <h2 className="text-4xl font-bold drop-shadow-lg">
 
             Système d'Information Communal de Recensement des Établissements
-            Scolaires
+           Educatifs
 
           </h2>
 
@@ -64,8 +64,8 @@ export default function LoginPage() {
 
           <p className="mt-3 text-gray-200 drop-shadow-md">
 
-            Gérez facilement les informations des établissements scolaires de
-            votre commune
+            Tous les établissements de votre commune, 
+            réunis en un seul endroit.
 
           </p>
 
