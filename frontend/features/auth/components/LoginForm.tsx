@@ -1,202 +1,293 @@
 "use client";
 
-import React, { useState } from "react";
-import { FiEye, FiEyeOff, FiMail, FiLock } from "react-icons/fi";
+import { FormEvent, useState } from "react";
+import {
+  FiEye,
+  FiEyeOff,
+  FiUser,
+  FiLock,
+  FiLoader,
+} from "react-icons/fi";
+import { useRouter } from "next/navigation";
+
 import { login } from "../services/authService";
 import { useAuth } from "@/contexts/AuthContext";
 
-
 export default function LoginForm() {
+  const router = useRouter();
+  const { setUser } = useAuth();
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [show, setShow] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  const [email,setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const [password,setPassword] = useState("");
-
-  const {setUser} = useAuth();
-
-
-
-  async function handleSubmit(e: React.FormEvent){
-
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    setError("");
+
+    if (!username.trim()) {
+      setError("Veuillez saisir votre nom d'utilisateur.");
+      return;
+    }
+
+    if (!password) {
+      setError("Veuillez saisir votre mot de passe.");
+      return;
+    }
 
     try {
+      setLoading(true);
 
       const response = await login(
-        email,
+        username.trim(),
         password
       );
 
-
       setUser(response.user);
 
+      /*
+       * Pour le moment, nous conservons uniquement
+       * la session côté frontend.
+       *
+       * Le stockage du token sera adapté lorsque
+       * le backend sera connecté.
+       */
+      if (rememberMe) {
+        localStorage.setItem(
+          "sicree_user",
+          JSON.stringify(response.user)
+        );
+      } else {
+        sessionStorage.setItem(
+          "sicree_user",
+          JSON.stringify(response.user)
+        );
+      }
 
-      console.log(
-        "Utilisateur connecté",
-        response.user
-      );
-
-
-    } catch(error){
-
-      console.error(
-        "Erreur connexion",
-        error
-      );
-
+      router.push("/dashboard");
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Une erreur est survenue lors de la connexion.");
+      }
+    } finally {
+      setLoading(false);
     }
-
   }
 
-
-
   return (
-
     <form
-      className="mt-6 space-y-4"
       onSubmit={handleSubmit}
+      className="mt-8 space-y-5"
     >
+      {/* MESSAGE D'ERREUR */}
+      {error && (
+        <div
+          role="alert"
+          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+        >
+          {error}
+        </div>
+      )}
 
-
+      {/* NOM D'UTILISATEUR */}
       <div>
-
-        <label className="text-sm font-medium text-gray-700">
-          Adresse email
+        <label
+          htmlFor="username"
+          className="text-sm font-medium text-gray-700"
+        >
+          Nom d'utilisateur
         </label>
 
-
-        <div className="mt-2 relative">
-
-          <FiMail className="absolute left-3 top-3 text-gray-500"/>
-
-
-          <input
-
-            type="email"
-
-            value={email}
-
-            onChange={(e)=>setEmail(e.target.value)}
-
-            placeholder="exemple@email.com"
-
-            className="w-full border border-gray-300 rounded-md px-4 py-2 pl-10 text-gray-700"
-
+        <div className="relative mt-2">
+          <FiUser
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
           />
 
-
+          <input
+            id="username"
+            name="username"
+            type="text"
+            autoComplete="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Votre nom d'utilisateur"
+            disabled={loading}
+            className="
+              w-full
+              rounded-lg
+              border
+              border-gray-300
+              bg-white
+              px-4
+              py-3
+              pl-10
+              text-sm
+              text-gray-700
+              outline-none
+              transition
+              placeholder:text-gray-400
+              focus:border-[#123524]
+              focus:ring-2
+              focus:ring-[#123524]/10
+              disabled:cursor-not-allowed
+              disabled:bg-gray-50
+            "
+          />
         </div>
-
       </div>
 
-
-
-
-
+      {/* MOT DE PASSE */}
       <div>
-
-
-        <label className="text-sm font-medium text-gray-700">
+        <label
+          htmlFor="password"
+          className="text-sm font-medium text-gray-700"
+        >
           Mot de passe
         </label>
 
-
-        <div className="mt-2 relative">
-
-
-          <FiLock className="absolute left-3 top-3 text-gray-500"/>
-
-
-          <input
-
-            type={show ? "text":"password"}
-
-            value={password}
-
-            onChange={(e)=>setPassword(e.target.value)}
-
-            placeholder="••••••••"
-
-            className="w-full border border-gray-300 rounded-md px-4 py-2 pl-10 pr-10 text-gray-700"
-
+        <div className="relative mt-2">
+          <FiLock
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={18}
           />
 
-
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            disabled={loading}
+            className="
+              w-full
+              rounded-lg
+              border
+              border-gray-300
+              bg-white
+              px-4
+              py-3
+              pl-10
+              pr-11
+              text-sm
+              text-gray-700
+              outline-none
+              transition
+              placeholder:text-gray-400
+              focus:border-[#123524]
+              focus:ring-2
+              focus:ring-[#123524]/10
+              disabled:cursor-not-allowed
+              disabled:bg-gray-50
+            "
+          />
 
           <button
-
             type="button"
-
-            onClick={()=>setShow(!show)}
-
-            className="absolute right-3 top-3"
-
-          >
-
-            {
-              show 
-              ? <FiEyeOff/>
-              : <FiEye/>
+            onClick={() => setShowPassword(!showPassword)}
+            disabled={loading}
+            aria-label={
+              showPassword
+                ? "Masquer le mot de passe"
+                : "Afficher le mot de passe"
             }
-
-
+            className="
+              absolute
+              right-3
+              top-1/2
+              -translate-y-1/2
+              text-gray-400
+              transition
+              hover:text-gray-700
+              disabled:cursor-not-allowed
+            "
+          >
+            {showPassword ? (
+              <FiEyeOff size={18} />
+            ) : (
+              <FiEye size={18} />
+            )}
           </button>
-
-
         </div>
-
-
       </div>
 
+      {/* OPTIONS */}
+      <div className="flex items-center justify-between text-sm">
+        <label className="flex cursor-pointer items-center gap-2 text-gray-600">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            disabled={loading}
+            className="
+              h-4
+              w-4
+              rounded
+              border-gray-300
+              accent-[#123524]
+            "
+          />
 
-
-
-
-      <div className="flex justify-between text-sm">
-
-
-        <label className="flex gap-2 text-gray-700">
-
-          <input type="checkbox"/>
-
-          Se souvenir de moi
-
+          <span>Se souvenir de moi</span>
         </label>
 
-
-
-        <a className="text-blue-600">
-
+        <button
+          type="button"
+          className="font-medium text-[#123524] hover:underline"
+        >
           Mot de passe oublié ?
-
-        </a>
-
-
+        </button>
       </div>
 
-
-
-
+      {/* BOUTON CONNEXION */}
       <button
-
         type="submit"
-
-        className="w-full bg-black text-white py-2 rounded-md"
-
+        disabled={loading}
+        className="
+          flex
+          w-full
+          items-center
+          justify-center
+          gap-2
+          rounded-lg
+          bg-[#123524]
+          px-4
+          py-3
+          text-sm
+          font-semibold
+          text-white
+          transition
+          hover:bg-[#0d281b]
+          focus:outline-none
+          focus:ring-2
+          focus:ring-[#123524]
+          focus:ring-offset-2
+          disabled:cursor-not-allowed
+          disabled:opacity-70
+        "
       >
-
-        Se connecter
-
+        {loading ? (
+          <>
+            <FiLoader
+              size={18}
+              className="animate-spin"
+            />
+            Connexion...
+          </>
+        ) : (
+          "Se connecter"
+        )}
       </button>
-
-
-
     </form>
-
   );
-
 }
