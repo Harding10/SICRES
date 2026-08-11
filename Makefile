@@ -39,7 +39,7 @@ up: ## Démarrer tous les services
 	@echo "$(GREEN)▶ Démarrage des services SICRES...$(NC)"
 	$(COMPOSE) up -d
 	@echo "$(GREEN)✓ Services démarrés$(NC)"
-	@echo "  🌐 API Backend  : http://localhost:80/api"
+	@echo "  🌐 API Backend  : http://localhost:8090/api"
 	@echo "  🖥  Frontend     : http://localhost:3000"
 	@echo "  📧 Mailpit UI   : http://localhost:8025"
 

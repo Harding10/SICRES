@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { FiEye, FiEyeOff, FiMail, FiLock } from "react-icons/fi";
-import { login } from "../services/authService";
+import { getCurrentUser, login } from "../services/authService";
 import { useAuth } from "@/contexts/AuthContext";
 
 
@@ -26,18 +26,14 @@ export default function LoginForm() {
 
     try {
 
-      const response = await login(
-        email,
-        password
-      );
+      await login(email, password);
+      const user = await getCurrentUser();
 
-
-      setUser(response.user);
-
+      setUser(user);
 
       console.log(
         "Utilisateur connecté",
-        response.user
+        user
       );
 
 

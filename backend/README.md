@@ -1,253 +1,60 @@
 # SICRES API Backend
 
-API RESTful pour le système de gestion SICRES. Construite avec Laravel 13 et PostgreSQL, conçue pour gérer les opérations métier avec une architecture scalable et sécurisée.
+API Laravel pour SICRES avec authentification et base de données PostgreSQL.
 
-## 📋 Table des matières
+## Prérequis
 
-- [Stack Technologique](#-stack-technologique)
-- [Prérequis](#-prérequis)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [Structure du Projet](#-structure-du-projet)
-- [Authentification](#-authentification)
-- [Base de Données](#-base-de-données)
-- [Commandes Utiles](#-commandes-utiles)
-- [API Documentation](#-api-documentation)
-- [Testing](#-testing)
-- [Déploiement](#-déploiement)
-- [Contributing](#-contributing)
+- Docker Compose
+- PHP 8.4+
+- Composer 2+
+- PostgreSQL
 
-## 🛠 Stack Technologique
+## Démarrage local
 
-| Composant | Version | Description |
-|-----------|---------|-------------|
-| **PHP** | 8.3+ | Langage backend |
-| **Laravel** | 13.8 | Framework web |
-| **PostgreSQL** | Latest | Base de données relationnelle |
-| **Laravel Sanctum** | 4.0 | API token authentication |
-| **Laravel Breeze** | 2.4 | Starter kit authentification |
-| **PHPUnit** | 12.5.12 | Testing framework |
-| **Laravel Pint** | 1.27 | Code style fixer |
-
-## 📦 Prérequis
-
-- PHP 8.3+
-- Composer 2.0+
-- PostgreSQL 12+
-- Git
-
-## 🚀 Installation
-
-### 1. Cloner le repository
+Depuis la racine du projet :
 
 ```bash
-git clone https://github.com/Harding10/SICRES.git
-cd SICRES/backend
+docker compose up -d --build
 ```
 
-### 2. Installer les dépendances
+## URLs importantes
+
+- Backend : http://localhost:8100
+- Login : http://localhost:8100/api/login
+- Utilisateur courant : http://localhost:8100/api/user
+
+## Authentification
+
+Les routes de connexion sont définies dans [routes/auth.php](routes/auth.php).
+
+Les points clés sont :
+
+- [app/Http/Controllers/Auth/AuthenticatedSessionController.php](app/Http/Controllers/Auth/AuthenticatedSessionController.php)
+- [app/Http/Requests/Auth/LoginRequest.php](app/Http/Requests/Auth/LoginRequest.php)
+
+### Test de connexion
 
 ```bash
-composer install
+curl -i -X POST http://localhost:8100/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin.communal@sicres.ci","password":"Sic@2026!Pb"}'
 ```
 
-### 3. Générer la clé applicative
+## Commandes utiles
 
 ```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-### 4. Configurer la base de données
-
-Éditer le fichier `.env` avec vos paramètres PostgreSQL:
-
-```env
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=sic_db
-DB_USERNAME=postgres
-DB_PASSWORD=votre_mot_de_passe
-```
-
-### 5. Exécuter les migrations
-
-```bash
+docker compose ps
+docker compose logs -f php
+docker compose exec postgres psql -U sicres_user -d sicres_db
 php artisan migrate
+php artisan test
 ```
 
-### 6. (Optionnel) Charger les données de test
+## Documentation
 
-```bash
-php artisan db:seed
-```
+- [../docs/authentification-login.md](../docs/authentification-login.md)
+- [../docs/06-API.md](../docs/06-API.md)
 
-## ⚙️ Configuration
-
-### Variables d'environnement essentielles
-
-```env
-APP_NAME=SICRES
-APP_ENV=local|production
-APP_DEBUG=true|false
-APP_URL=http://localhost:8000
-FRONTEND_URL=http://localhost:3000
-
-# Base de données
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=sic_db
-DB_USERNAME=postgres
-DB_PASSWORD=...
-
-# Session
-SESSION_DRIVER=database
-SESSION_LIFETIME=120
-
-# Cache & Queue
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-```
-
-### Configuration Laravel
-
-Les fichiers de configuration principaux se trouvent dans `/config`:
-- `app.php` - Configuration applicative
-- `database.php` - Connexions base de données
-- `sanctum.php` - Configuration authentification API
-- `queue.php` - Configuration des jobs
-
-## 📁 Structure du Projet
-
-```
-backend/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   │   └── Auth/           # Contrôleurs authentification (Breeze)
-│   │   ├── Middleware/         # Middlewares personnalisés
-│   │   └── Requests/           # Form requests validation
-│   ├── Models/                 # Modèles Eloquent
-│   ├── Services/               # Logique métier (optionnel)
-│   └── Exceptions/             # Exceptions personnalisées
-├── database/
-│   ├── migrations/             # Migrations de schéma
-│   ├── seeders/                # Data seeders
-│   └── factories/              # Model factories pour tests
-├── routes/
-│   ├── api.php                 # Routes API
-│   ├── auth.php                # Routes authentification
-│   └── web.php                 # Routes web (admin, etc)
-├── tests/
-│   ├── Unit/                   # Tests unitaires
-│   ├── Feature/                # Tests fonctionnels
-│   └── CreatesApplication.php  # Test helper
-├── config/                     # Fichiers configuration
-├── bootstrap/                  # Bootstrap application
-├── storage/                    # Logs, sessions, uploads
-├── public/                     # Document root
-├── .env                        # Variables d'environnement (local)
-├── .env.example                # Template .env
-├── composer.json               # Dépendances PHP
-└── artisan                     # CLI Laravel
-```
-
-## 🔐 Authentification
-
-### Laravel Breeze API
-
-L'authentification est gérée via **Laravel Sanctum** avec les endpoints fournis par Breeze:
-
-#### Endpoints d'authentification
-
-```
-POST   /api/register           # S'inscrire
-POST   /api/login              # Se connecter
-POST   /api/logout             # Se déconnecter (nécessite token)
-GET    /api/user               # Récupérer l'utilisateur actuel (nécessite token)
-```
-
-#### Utilisation du token
-
-Les tokens Sanctum s'envoient dans le header `Authorization`:
-
-```bash
-curl -H "Authorization: Bearer {token}" http://localhost:8000/api/user
-```
-
-### Protéger les routes
-
-Ajouter le middleware `auth:sanctum` aux routes protégées:
-
-```php
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-```
-
-## 💾 Base de Données
-
-### Migrations
-
-Créer une nouvelle migration:
-
-```bash
-php artisan make:migration create_users_table
-```
-
-Exécuter les migrations:
-
-```bash
-php artisan migrate
-```
-
-Annuler la dernière batch de migrations:
-
-```bash
-php artisan migrate:rollback
-```
-
-Réinitialiser complètement:
-
-```bash
-php artisan migrate:fresh
-```
-
-### Modèles et Relations
-
-Les modèles Eloquent se créent avec:
-
-```bash
-php artisan make:model Post -m  # Crée le modèle et la migration
-```
-
-## 🎯 Commandes Utiles
-
-### Serveur de développement
-
-```bash
-php artisan serve                # Démarre le serveur (http://localhost:8000)
-php artisan serve --port=3000   # Sur un port spécifique
-```
-
-### Base de données
-
-```bash
-php artisan migrate              # Exécuter les migrations
-php artisan migrate:status       # Vérifier le statut
-php artisan migrate:rollback     # Annuler la dernière batch
-php artisan migrate:refresh      # Reset + seed
-php artisan db:seed              # Charger les seeders
-php artisan tinker               # REPL interactive
-```
-
-### Code Quality
-
-```bash
-php artisan pint                 # Format le code (Laravel Pint)
-php artisan test                 # Lancer les tests (PHPUnit)
 php artisan test --filter=UserTest  # Tests spécifiques
 ```
 

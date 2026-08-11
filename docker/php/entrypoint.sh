@@ -21,6 +21,21 @@ log_warning() { echo -e "${YELLOW}[SICRES ⚠]${NC} $1"; }
 log_error()   { echo -e "${RED}[SICRES ✗]${NC} $1"; }
 
 ###############################################################################
+# 0. Préparation des permissions du projet
+###############################################################################
+log_info "Préparation des permissions du projet..."
+mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public/storage
+for dir in /var/www/html/storage /var/www/html/bootstrap /var/www/html/public/storage; do
+    if [ -d "$dir" ]; then
+        chmod -R ugo+rwX "$dir" 2>/dev/null || true
+    fi
+done
+if [ "$(id -u)" -eq 0 ]; then
+    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap /var/www/html/public/storage 2>/dev/null || true
+fi
+log_success "Permissions du projet préparées"
+
+###############################################################################
 # 1. Vérification du fichier .env
 ###############################################################################
 log_info "Vérification du fichier .env..."
@@ -93,10 +108,10 @@ log_success "Migrations terminées"
 # 6. Optimisations Laravel (cache)
 ###############################################################################
 log_info "Optimisation Laravel (cache des configs, routes, vues)..."
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-log_success "Cache généré"
+php artisan config:clear >/dev/null 2>&1 || true
+php artisan route:clear >/dev/null 2>&1 || true
+php artisan view:clear >/dev/null 2>&1 || true
+log_success "Cache Laravel ignoré au démarrage"
 
 ###############################################################################
 # 7. Création du lien symbolique storage
@@ -113,8 +128,8 @@ fi
 # 8. Permissions des dossiers
 ###############################################################################
 log_info "Configuration des permissions..."
-chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/storage/framework/cache /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views /var/www/html/storage/logs
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/bootstrap/app.php /var/www/html/bootstrap/providers.php 2>/dev/null || true
 log_success "Permissions configurées"
 
 ###############################################################################

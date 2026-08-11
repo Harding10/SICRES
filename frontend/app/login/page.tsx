@@ -21,7 +21,6 @@ export default function LoginPage() {
 
 
         {/* FILTRE IMAGE */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
 
 
 

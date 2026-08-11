@@ -1,43 +1,47 @@
-import { LoginResponse } from "../types/auth";
+import { User } from "../types/auth";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8090";
 
-export async function login(
-email:string,
-password:string
-):Promise<LoginResponse>{
+export async function login(email: string, password: string): Promise<void> {
+  // Demande le cookie CSRF (Sanctum)
+  const csrfResponse = await fetch(`${API_URL}/sanctum/csrf-cookie`, {
+    credentials: "include",
+    mode: "cors",
+  });
 
+  if (!csrfResponse.ok) {
+    throw new Error(`Échec CSRF: ${csrfResponse.status}`);
+  }
 
-const response = await fetch(
-"http://localhost/api/login",
-{
+  const response = await fetch(`${API_URL}/api/login`, {
+    method: "POST",
+    mode: "cors",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+    },
+    body: JSON.stringify({ email, password }),
+    credentials: "include",
+  });
 
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-email,
-password
-})
-
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`Erreur de connexion (${response.status}) ${text}`);
+  }
 }
 
-);
+export async function getCurrentUser(): Promise<User> {
+  const response = await fetch(`${API_URL}/api/user`, {
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
+    },
+  });
 
+  if (!response.ok) {
+    throw new Error("Impossible de récupérer l'utilisateur");
+  }
 
-if(!response.ok){
-
-throw new Error(
-"Erreur de connexion"
-);
-
-}
-
-
-
-return response.json();
-
-
+  return response.json();
 }

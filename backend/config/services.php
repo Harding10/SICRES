@@ -28,7 +28,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'admin_seed' => [
+        'name' => env('ADMIN_SEED_NAME', 'Administrateur Port-Bouët'),
+        'email' => env('ADMIN_SEED_EMAIL', 'admin.portbouet@sicres.ci'),
+        'password' => env('ADMIN_SEED_PASSWORD'),
+    ],
+
     'slack' => [
+
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
