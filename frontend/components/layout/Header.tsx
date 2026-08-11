@@ -1,11 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-
 import {
   Search,
   Bell,
-  User,
+  ChevronDown,
 } from "lucide-react";
 
 export default function Header() {
@@ -21,24 +20,24 @@ export default function Header() {
   const title = pageTitles[pathname] || "SICREE";
 
   return (
-    <header className="flex h-20 items-center justify-between border-b border-gray-200 bg-white px-6">
+    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-gray-100 bg-white/95 px-6 backdrop-blur">
       {/* PARTIE GAUCHE */}
       <div>
-        <h1 className="text-xl font-bold text-gray-900">
+        <h2 className="text-lg font-bold text-[var(--color-gray-900)]">
           {title}
-        </h1>
+        </h2>
 
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-0.5 text-xs text-gray-500">
           Système d'Information Communal de Recensement
         </p>
       </div>
 
       {/* PARTIE DROITE */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* RECHERCHE */}
-        <div className="hidden items-center rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 lg:flex">
+        <div className="hidden h-10 items-center rounded-xl border border-gray-200 bg-gray-50 px-3 transition focus-within:border-[#3b8c7d]/40 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#3b8c7d]/10 lg:flex">
           <Search
-            size={18}
+            size={17}
             strokeWidth={2}
             className="mr-2 text-gray-400"
           />
@@ -54,26 +53,21 @@ export default function Header() {
         <button
           type="button"
           aria-label="Notifications"
-          className="relative flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition hover:bg-gray-100 hover:text-gray-700"
+          className="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-[#3b8c7d]/10 hover:text-[#3b8c7d]"
         >
-          <Bell
-            size={20}
-            strokeWidth={2}
-          />
+          <Bell size={19} strokeWidth={2} />
 
-          {/* Badge notification */}
-          <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#FFA800] ring-2 ring-white" />
         </button>
 
         {/* UTILISATEUR */}
-        <div className="flex items-center gap-3 border-l border-gray-200 pl-4">
-          {/* Avatar */}
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#123524] text-sm font-semibold text-white">
+        <div className="ml-1 flex items-center gap-3 border-l border-gray-200 pl-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#3b8c7d] text-sm font-bold text-white shadow-sm">
             A
           </div>
 
           <div className="hidden md:block">
-            <p className="text-sm font-semibold text-gray-800">
+            <p className="text-sm font-semibold text-[var(--color-gray-900)]">
               Administrateur
             </p>
 
@@ -81,6 +75,11 @@ export default function Header() {
               Commune
             </p>
           </div>
+
+          <ChevronDown
+            size={16}
+            className="hidden text-gray-400 md:block"
+          />
         </div>
       </div>
     </header>

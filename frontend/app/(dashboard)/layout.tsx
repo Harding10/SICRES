@@ -21,8 +21,10 @@ export default function DashboardLayout({
           <Header />
 
           {/* PAGE */}
-          <main className="p-6">
-            {children}
+          <main className="p-6 lg:p-8">
+            <div className="mx-auto max-w-[1600px]">
+              {children}
+            </div>
           </main>
         </div>
       </div>
