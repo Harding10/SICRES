@@ -135,9 +135,10 @@ services:
       - /app/node_modules
       - /app/.next
     environment:
-      - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:8090
-      - WATCHPACK_POLLING=true
+    - NODE_ENV=development
+    - NEXT_PUBLIC_BACKEND_URL=http://localhost:8888
+    - NEXT_PUBLIC_API_URL=http://localhost:8888/api
+    - WATCHPACK_POLLING=true
     depends_on:
       - nginx
     networks:

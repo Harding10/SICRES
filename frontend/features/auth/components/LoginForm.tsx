@@ -3,12 +3,12 @@
 import React, { FormEvent, useState } from "react";
 import { FiEye, FiEyeOff, FiMail, FiLock, FiLoader } from "react-icons/fi";
 import { useRouter } from "next/navigation";
-import { login, getCurrentUser } from "../services/authService";
+import { login } from "../services/authService";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { setUser } = useAuth();
+  const { refresh } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,21 +37,13 @@ export default function LoginForm() {
     try {
       setLoading(true);
 
+      // 1. Authentification (le serveur pose le cookie de session HTTP-only)
       await login(email, password);
-      const user = await getCurrentUser();
 
-      setUser(user);
+      // 2. Le contexte récupère le vrai profil utilisateur depuis /api/user
+      await refresh();
 
-      // Stockage du token/session
-      if (rememberMe) {
-        localStorage.setItem("sicres_user", JSON.stringify(user));
-      } else {
-        sessionStorage.setItem("sicres_user", JSON.stringify(user));
-      }
-
-      console.log("Utilisateur connecté", user);
-
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -65,45 +57,45 @@ export default function LoginForm() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mt-8 space-y-5"
-    >
-      {/* MESSAGE D'ERREUR */}
-      {error && (
-        <div
-          role="alert"
-          className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
-        >
-          {error}
-        </div>
-      )}
+      <form
+          onSubmit={handleSubmit}
+          className="mt-8 space-y-5"
+      >
+        {/* MESSAGE D'ERREUR */}
+        {error && (
+            <div
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600"
+            >
+              {error}
+            </div>
+        )}
 
-      {/* EMAIL */}
-      <div>
-        <label
-          htmlFor="email"
-          className="text-sm font-medium text-gray-700"
-        >
-          Adresse email
-        </label>
+        {/* EMAIL */}
+        <div>
+          <label
+              htmlFor="email"
+              className="text-sm font-medium text-gray-700"
+          >
+            Adresse email
+          </label>
 
-        <div className="relative mt-2">
-          <FiMail
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
+          <div className="relative mt-2">
+            <FiMail
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+            />
 
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="votre.email@example.com"
-            disabled={loading}
-            className="
+            <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="votre.email@example.com"
+                disabled={loading}
+                className="
               w-full
               rounded-lg
               border
@@ -123,35 +115,35 @@ export default function LoginForm() {
               disabled:cursor-not-allowed
               disabled:bg-gray-50
             "
-          />
+            />
+          </div>
         </div>
-      </div>
 
-      {/* MOT DE PASSE */}
-      <div>
-        <label
-          htmlFor="password"
-          className="text-sm font-medium text-gray-700"
-        >
-          Mot de passe
-        </label>
+        {/* MOT DE PASSE */}
+        <div>
+          <label
+              htmlFor="password"
+              className="text-sm font-medium text-gray-700"
+          >
+            Mot de passe
+          </label>
 
-        <div className="relative mt-2">
-          <FiLock
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
+          <div className="relative mt-2">
+            <FiLock
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+            />
 
-          <input
-            id="password"
-            name="password"
-            type={showPassword ? "text" : "password"}
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            disabled={loading}
-            className="
+            <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                disabled={loading}
+                className="
               w-full
               rounded-lg
               border
@@ -172,18 +164,18 @@ export default function LoginForm() {
               disabled:cursor-not-allowed
               disabled:bg-gray-50
             "
-          />
+            />
 
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            disabled={loading}
-            aria-label={
-              showPassword
-                ? "Masquer le mot de passe"
-                : "Afficher le mot de passe"
-            }
-            className="
+            <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
+                aria-label={
+                  showPassword
+                      ? "Masquer le mot de passe"
+                      : "Afficher le mot de passe"
+                }
+                className="
               absolute
               right-3
               top-1/2
@@ -193,49 +185,49 @@ export default function LoginForm() {
               hover:text-gray-700
               disabled:cursor-not-allowed
             "
-          >
-            {showPassword ? (
-              <FiEyeOff size={18} />
-            ) : (
-              <FiEye size={18} />
-            )}
-          </button>
+            >
+              {showPassword ? (
+                  <FiEyeOff size={18} />
+              ) : (
+                  <FiEye size={18} />
+              )}
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* OPTIONS */}
-      <div className="flex items-center justify-between text-sm">
-        <label className="flex cursor-pointer items-center gap-2 text-gray-600">
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            disabled={loading}
-            className="
+        {/* OPTIONS */}
+        <div className="flex items-center justify-between text-sm">
+          <label className="flex cursor-pointer items-center gap-2 text-gray-600">
+            <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={loading}
+                className="
               h-4
               w-4
               rounded
               border-gray-300
               accent-[#123524]
             "
-          />
+            />
 
-          <span>Se souvenir de moi</span>
-        </label>
+            <span>Se souvenir de moi</span>
+          </label>
 
+          <button
+              type="button"
+              className="font-medium text-[#123524] hover:underline"
+          >
+            Mot de passe oublié ?
+          </button>
+        </div>
+
+        {/* BOUTON CONNEXION */}
         <button
-          type="button"
-          className="font-medium text-[#123524] hover:underline"
-        >
-          Mot de passe oublié ?
-        </button>
-      </div>
-
-      {/* BOUTON CONNEXION */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="
+            type="submit"
+            disabled={loading}
+            className="
           flex
           w-full
           items-center
@@ -257,19 +249,19 @@ export default function LoginForm() {
           disabled:cursor-not-allowed
           disabled:opacity-70
         "
-      >
-        {loading ? (
-          <>
-            <FiLoader
-              size={18}
-              className="animate-spin"
-            />
-            Connexion...
-          </>
-        ) : (
-          "Se connecter"
-        )}
-      </button>
-    </form>
+        >
+          {loading ? (
+              <>
+                <FiLoader
+                    size={18}
+                    className="animate-spin"
+                />
+                Connexion...
+              </>
+          ) : (
+              "Se connecter"
+          )}
+        </button>
+      </form>
   );
 }

@@ -1,5 +1,5 @@
 ###############################################################################
-# Makefile — Commandes de développement SICRES
+# Makefile — Commandes de développement SICREE
 # Usage: make <commande>
 ###############################################################################
 
@@ -199,7 +199,7 @@ setup: ## Installation complète (première fois)
 	@$(MAKE) migrate
 	@echo ""
 	@echo "$(GREEN)╔═══════════════════════════════════════════╗$(NC)"
-	@echo "$(GREEN)║  ✓ SICRES est prêt !                      ║$(NC)"
+	@echo "$(GREEN)║  ✓ SICREE est prêt !                      ║$(NC)"
 	@echo "$(GREEN)║                                           ║$(NC)"
 	@echo "$(GREEN)║  🌐 API    : http://localhost/api          ║$(NC)"
 	@echo "$(GREEN)║  🖥  Frontend : http://localhost:3000       ║$(NC)"

@@ -93,7 +93,7 @@ export default function LoginPage() {
 
             <h1 className="text-3xl font-bold text-gray-900">
 
-              Bienvenue sur SICRES !
+              Bienvenue sur SICREE !
 
             </h1>
 
