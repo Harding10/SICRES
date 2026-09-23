@@ -36,3 +36,6 @@ docker/nginx/certs/*.pem
 *.log
 
 # Les dossiers backend/ et frontend/ ont leurs propres .gitignore
+
+# Dependencies globales
+node_modules/

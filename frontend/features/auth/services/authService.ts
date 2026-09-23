@@ -1,19 +1,19 @@
-import { authClient } from "@/lib/axios";
 import { User } from "../types/auth";
 
 export async function login(email: string, password: string): Promise<void> {
-  // 1. Récupère le cookie CSRF (obligatoire avant toute requête POST avec Sanctum)
-  await authClient.get("/sanctum/csrf-cookie");
-
-  // 2. Envoie les identifiants
-  await authClient.post("/login", { email, password });
+  console.log("Mock Login", email);
 }
 
 export async function logout(): Promise<void> {
-  await authClient.post("/logout");
+  console.log("Mock Logout");
 }
 
-export async function getCurrentUser(): Promise<User> {
-  const response = await authClient.get<User>("/api/user");
-  return response.data;
+export async function getCurrentUser(): Promise<User | null> {
+  // Simule une réponse immédiate sans faire d'appel HTTP vers Laravel
+  return {
+    id: 1,
+    name: "Utilisateur Test",
+    username: "testuser",
+    role: "Client",
+  };
 }
