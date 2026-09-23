@@ -6,8 +6,6 @@ export const apiClient = Axios.create({
     headers: { 'X-Requested-With': 'XMLHttpRequest' },
     withCredentials: true,
     withXSRFToken: true,
-
-    
 });
 
 // Client pour les routes d'authentification (login, logout, csrf-cookie, user)
@@ -18,5 +16,27 @@ export const authClient = Axios.create({
     withXSRFToken: true,
 });
 
-// Export par défaut conservé pour compatibilité avec le code existant
+// ============================================================================
+// SIMULATION FRONTEND TEMPORAIRE (Évite "Network Error" sans backend)
+// Peut-etre supprimer une fois les API prêtes.
+// ============================================================================
+const fakeResponse = (config: any) => ({
+    data: { status: "success", message: "Mock Frontend", user: { name: "Agent Test" } },
+    status: 200,
+    statusText: "OK",
+    headers: {},
+    config,
+});
+
+apiClient.interceptors.request.use((config) => {
+    config.adapter = async () => fakeResponse(config);
+    return config;
+});
+
+authClient.interceptors.request.use((config) => {
+    config.adapter = async () => fakeResponse(config);
+    return config;
+});
+// ============================================================================
+
 export default apiClient;
